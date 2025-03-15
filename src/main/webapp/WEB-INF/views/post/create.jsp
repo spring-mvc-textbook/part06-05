@@ -59,10 +59,8 @@
 
                 <%-- card-footer --%>
                 <div class="card-footer">
-                    <div>
-                        <button type="submit" class="btn btn-primary">등록</button>
-                        <a href="/posts" class="btn btn-secondary">취소</a>
-                    </div>
+                    <button type="submit" class="btn btn-primary">등록</button>
+                    <a href="/posts" class="btn btn-secondary">취소</a>
                 </div>
                 <%--// card-footer --%>
             </div>
