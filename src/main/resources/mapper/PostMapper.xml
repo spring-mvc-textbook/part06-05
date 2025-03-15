@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="postMapper">
+
+    <resultMap id="postResultMap" type="com.example.spring.post.PostDto">
+        <result property="id" column="ID" />
+        <result property="title" column="TITLE" />
+        <result property="content" column="CONTENT" />
+        <result property="username" column="USERNAME" />
+        <result property="password" column="PASSWORD" />
+        <result property="createdAt" column="CREATED_AT" />
+        <result property="updatedAt" column="UPDATED_AT" />
+        <result property="fileName" column="FILE_NAME" />
+        <result property="originalFileName" column="ORIGINAL_FILE_NAME" />
+    </resultMap>
+
+    <!-- 게시글 등록 -->
+    <insert id="create" parameterType="com.example.spring.post.PostDto" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO POSTS (
+            TITLE, 
+            CONTENT, 
+            USERNAME, 
+            PASSWORD,
+            FILE_NAME,
+            ORIGINAL_FILE_NAME
+        ) VALUES (
+            #{title}, 
+            #{content}, 
+            #{username}, 
+            #{password},
+            #{fileName},
+            #{originalFileName}
+        )
+        ]]>
+    </insert>
+
+    <!-- 게시글 목록 -->
+    <select id="list" resultMap="postResultMap">
+        <![CDATA[
+        SELECT
+            ID,
+            TITLE,
+            CONTENT,
+            USERNAME,
+            PASSWORD,
+            CREATED_AT,
+            UPDATED_AT,
+            FILE_NAME,
+            ORIGINAL_FILE_NAME
+        FROM
+            POSTS
+        WHERE 1=1
+        ]]>
+        <if test="searchType != null and searchKeyword != null">
+            <choose>
+                <when test="searchType == 'title'">
+                    <![CDATA[
+                    AND TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'content'">
+                    <![CDATA[
+                    AND CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'username'">
+                    <![CDATA[
+                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'all'">
+                    <![CDATA[
+                    AND (
+                        TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    )
+                    ]]>
+                </when>
+            </choose>
+        </if>
+        <![CDATA[
+        ORDER BY ID DESC
+        LIMIT #{offset}, #{listCountPerPage}
+        ]]>
+    </select>
+
+    <!-- 게시글 보기 -->
+    <select id="read" resultMap="postResultMap">
+        <![CDATA[
+        SELECT
+            ID,
+            TITLE,
+            CONTENT,
+            USERNAME,
+            PASSWORD,
+            CREATED_AT,
+            UPDATED_AT,
+            FILE_NAME,
+            ORIGINAL_FILE_NAME
+        FROM
+            POSTS
+        WHERE
+            ID = #{id}
+        LIMIT 1
+        ]]>
+    </select>
+
+    <!-- 게시글 수정 -->
+    <update id="update" parameterType="com.example.spring.post.PostDto">
+        <![CDATA[
+        UPDATE
+            POSTS
+        SET
+            TITLE = #{title},
+            CONTENT = #{content},
+            USERNAME = #{username},
+            PASSWORD = #{password},
+            FILE_NAME = #{fileName},
+            ORIGINAL_FILE_NAME = #{originalFileName}
+        WHERE
+            ID = #{id}
+        LIMIT 1
+        ]]>
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM POSTS WHERE ID = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <!-- 전체 게시글 수 조회 -->
+    <select id="totalCount" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) FROM POSTS WHERE 1=1
+        ]]>
+        <if test="searchType != null and searchKeyword != null">
+            <choose>
+                <when test="searchType == 'title'">
+                    <![CDATA[
+                    AND TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'content'">
+                    <![CDATA[
+                    AND CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'username'">
+                    <![CDATA[
+                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'all'">
+                    <![CDATA[
+                    AND (
+                        TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    )
+                    ]]>
+                </when>
+            </choose>
+        </if>
+    </select>
+
+</mapper>
